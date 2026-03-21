@@ -42,3 +42,7 @@ body{
 .counter-overlay {
   display: none !important;
 }
+
+.no-scrollbar{
+  scrollbar-width: none;
+}
