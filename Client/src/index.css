@@ -17,3 +17,28 @@ body{
   color: white;
   background-color: #09090B;
 }
+
+/* Smooth entrance for Clerk modal (fallback): */
+.clerk-modal, .clerk-modal-dialog, .clerk-modal-content, [data-clerk-modal] {
+  transition: opacity 0.24s ease, transform 0.24s ease;
+  opacity: 0 !important;
+  transform: translateY(-8px) !important;
+}
+
+.clerk-modal[data-visible='true'],
+.clerk-modal-dialog[data-visible='true'],
+.clerk-modal-content[data-visible='true'],
+[data-clerk-modal][data-visible='true'] {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* Hide click-counter overlays in top-left, in case it's injected by a debug/test utility */
+#click-counter,
+.click-counter,
+.click-count,
+.clicks-count,
+.click-tracker,
+.counter-overlay {
+  display: none !important;
+}

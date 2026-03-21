@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { assets } from '../assets/assets'
 import { MenuIcon, SearchIcon, TicketPlus, XIcon } from 'lucide-react'
 import { useClerk, UserButton, useUser } from '@clerk/react'
@@ -32,7 +33,17 @@ const Navbar = () => {
         <SearchIcon className='max-md:hidden w-6 h-6 cursor-pointer'/>
         {
           !user ? (
-            <button onClick={openSignIn} className='px-4 py-1 sm:px-7 sm:py-2 bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer'>Login</button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96, opacity: 0.85 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              onClick={() => {
+                openSignIn()
+              }}
+              className='px-4 py-1 sm:px-7 sm:py-2 bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer'
+            >
+              Login
+            </motion.button>
           ) : (
             <UserButton>
               <UserButton.MenuItems>
