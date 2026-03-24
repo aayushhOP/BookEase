@@ -29,13 +29,13 @@ const syncUserDeletion = inngest.createFunction(
     const {id} = event.data
     await User.findByIdAndDelete(id)
   },
-  //{event: 'clerk/user.deleted'}
+  {event: 'clerk/user.deleted'}
 );
 
 //inngest funtion to update user in database
 const syncUserUpdation = inngest.createFunction(
   {id: 'update-user-from-clerk'},
-  //{event: 'clerk/user.created'}
+  {event: 'clerk/user.created'}
   async ({ event }) => {
     const {id, first_name, last_name, email_addresses, image_url} = event.data
     const userData = {
@@ -46,7 +46,7 @@ const syncUserUpdation = inngest.createFunction(
     }
     await User.findByIdAndUpdate(id, userData)
   },
-  //{event: 'clerk/user.updated'}
+  {event: 'clerk/user.updated'}
 );
 
 // Create an empty array where we'll export future Inngest functions
