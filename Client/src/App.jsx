@@ -15,6 +15,8 @@ import Dashboard from './pages/admin/Dashboard'
 import AddShows from './pages/admin/AddShows'
 import ListShows from './pages/admin/ListShows'
 import ListBookings from './pages/admin/ListBookings'
+import { useAppContext } from './context/AppContext'
+import { SignIn } from '@clerk/react'
 
 const pageVariants = {
   initial: { opacity: 0, y: 35, scale: 0.985 },
@@ -31,6 +33,7 @@ const pageTransition = {
 const App = () => {
   const location = useLocation()
   const isAdminRoute = location.pathname.startsWith('/admin')
+  const { user } = useAppContext()
 
   return (
     <>
@@ -54,7 +57,9 @@ const App = () => {
             <Route path='/movies/:id/:date' element={<SeatLayout />} />
             <Route path='/my-bookings' element={<MyBookings />} />
             <Route path='/favourite' element={<Favourite />} />
-            <Route path='/admin/*' element={<Layout />}>
+            <Route path='/admin/*' element={user ? <Layout /> : (<div className='min-h-screen flex justify-center items-center'>
+              <SignIn fallbackRedirectUrl={'/admin'} />
+            </div> )}>
               <Route index element={<Dashboard />} />
               <Route path='add-shows' index element={<AddShows />} />
               <Route path='list-shows' index element={<ListShows />} />
