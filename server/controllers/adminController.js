@@ -1,6 +1,7 @@
 import Booking from "../models/Booking.js"
 import Show from "../models/Show.js"
 import User from "../models/User.js"
+import Movie from "../models/Movie.js"
 
 
 // api to check if user is admin
