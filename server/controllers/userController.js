@@ -4,7 +4,7 @@ import Movie from "../models/Movie.js"
 
 
 //api controller function to get user bookings
-export const getUserBookings = async () => {
+export const getUserBookings = async (req, res) => {
   try {
     const user  = req.auth().userId
 
@@ -22,7 +22,7 @@ export const getUserBookings = async () => {
 }
 
 //api controller function to update favourite movie in clerk user metadata
-export const updateFavourite = async () => {
+export const updateFavourite = async (req, res) => {
   try {
     const {movieId} = req.body
 

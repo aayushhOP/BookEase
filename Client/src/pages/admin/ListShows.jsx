@@ -1,37 +1,37 @@
-import React, { useEffect, useState } from 'react'
-import { dummyShowsData } from '../../assets/assets';
+import React, { useEffect, useState, useCallback } from 'react'
 import Loading from '../../components/Loading';
 import Title from '../../components/admin/Title';
 import dateFormat from '../../lib/dateFormat';
+import { useAppContext } from '../../context/AppContext';
 
 const ListShows = () => {
 
   const currency = import.meta.env.VITE_CURRENCY
 
-  const [shows, setShows] = useState([])
-  const[loading, setLoading] = useState(true);
+  const {axios, getToken, user}= useAppContext()
 
-  const getAllShows = async () => {
+  const [shows, setShows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const getAllShows = useCallback(async () => {
+    setLoading(true)
     try {
-      setShows([{
-        movie:dummyShowsData[0],
-        showDateTime: '2025-06-30T02:30:00.000z',
-        showPrice: 59,
-        occupiedSeats: {
-          A1: 'user_1',
-          B1: 'user_2',
-          C1: 'user-3'
-        }
-      }]);
-      setLoading(false);
+      const {data} = await axios.get('/api/admin/all-shows', {headers: {Authorization: `Bearer ${await getToken()}`}});
+      console.log('admin/all-shows data', data);
+      setShows(Array.isArray(data?.shows) ? data.shows : []);
     } catch (error) {
-      console.error(error);
+      console.error('getAllShows error', error);
+      setShows([]);
+    } finally {
+      setLoading(false);
     }
-  }
+  }, [axios, getToken]);
 
   useEffect(() => {
-    getAllShows();
-  },[])
+    if (user) {
+      getAllShows();
+    }
+  }, [user, getAllShows]);
 
   return !loading ? (
     <>
@@ -49,16 +49,22 @@ const ListShows = () => {
               </tr>
             </thead>
             <tbody className='text-sm font-light'>
-              {shows.map((show,index) => (
-                <tr key={index} className='border-b border-primary/10 bg-primary/5 even:bg-primary/10'>
-                  <td className='p-2 min-w-45 pl-5'>{show.movie.title}</td>
-                  <td className='p-2'>{dateFormat(show.showDateTime)}</td>
-                  <td className='p-2'>{Object.keys(show.occupiedSeats).length}</td>
-                  <td className='p-2'>
-                    {currency} {Object.keys(show.occupiedSeats).length * show.showPrice}
-                  </td>
-                </tr>                
-              ))}
+              {Array.isArray(shows) && shows.length > 0 ? (
+                shows.map((show, index) => (
+                  <tr key={index} className='border-b border-primary/10 bg-primary/5 even:bg-primary/10'>
+                    <td className='p-2 min-w-45 pl-5'>{show.movie?.title || '-'}</td>
+                    <td className='p-2'>{dateFormat(show.showDateTime)}</td>
+                    <td className='p-2'>{Object.keys(show.occupiedSeats || {}).length}</td>
+                    <td className='p-2'>
+                      {currency} {Object.keys(show.occupiedSeats || {}).length * (show.showPrice || 0)}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className='p-4 text-center text-muted'>No shows available</td>
+                </tr>
+              )}
 
             </tbody>
         </table>

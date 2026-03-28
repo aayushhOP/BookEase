@@ -65,7 +65,7 @@ const App = () => {
               <Route path='list-shows' index element={<ListShows />} />
               <Route path='list-bookings' index element={<ListBookings />} />
             </Route>
-          </Routes>
+          </Routes>  
         </motion.div>
       </AnimatePresence>
 

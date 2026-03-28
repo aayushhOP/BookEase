@@ -116,11 +116,11 @@ export const getShow = async (req,res) => {
     const dateTime = {};
 
     shows.forEach((show) => {
-      const date = show.DateTime.toISOString().split("T")[0];
+      const date = show.showDateTime.toISOString().split("T")[0];
       if(!dateTime[date]) {
         dateTime[date] = []       
       }
-      dateTime[date].push({time: showDateTime, showId: show._id})
+      dateTime[date].push({time: show.showDateTime.toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit', hour12: true}), showId: show._id})
 
     })
     res.json({success: true, movie, dateTime})

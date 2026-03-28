@@ -9,6 +9,10 @@ import showRouter from './routes/showRouter.js';
 import bookingRouter from './routes/bookingRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
 import userRouter from './routes/userRoutes.js';
+import './models/Movie.js';
+import './models/Show.js';
+import './models/Booking.js';
+import './models/User.js';
 
 const app = express();
 const port = 3000;
