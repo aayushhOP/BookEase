@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import BlurCircle from '../components/BlurCircle'
-import { useNavigate, useParams } from 'react-router-dom'
-import { assets, dummyDateTimeData, dummyShowsData } from '../assets/assets'
+import { useParams } from 'react-router-dom'
+import { assets } from '../assets/assets'
 import Loading from '../components/Loading'
 import { ArrowRightIcon, ClockIcon } from 'lucide-react'
-import isoTimeFormat from '../lib/isoTimeFormat'
 import toast from 'react-hot-toast'
 import { useAppContext } from '../context/AppContext'
 
@@ -17,8 +16,7 @@ const SeatLayout = () => {
   const [show, setShow] = useState(null)
   const [occupiedSeats, setOccupiedSeats] = useState([])
 
-  const navigate = useNavigate()
-  const {axios, getToken, user} = useAppContext();
+  const { axios, getToken, user } = useAppContext();
 
   const getShow = async () => {
     try {
@@ -35,7 +33,7 @@ const SeatLayout = () => {
     if(!selectedTime) {
       return toast('Please select time first!')
     }
-    if(!selectedSeats.includes(seatId) && selectedSeats.length >4){
+    if(!selectedSeats.includes(seatId) && selectedSeats.length > 4){
       return toast('You can only select upto 5 seats')
     }
     if(occupiedSeats.includes(seatId)) {
@@ -82,17 +80,20 @@ const SeatLayout = () => {
       if(!user) return toast.error('Please login to proceed')
         if(!selectedTime || !selectedSeats.length) return toast.error('Please select a time and seats')
       
-      const {data} = await axios.post('/api/booking/create', {showId: selectedTime.showId, selectedSeats}, {headers: { Authorization: `Bearer ${await getToken()}`}})
+      const { data } = await axios.post(
+        '/api/booking/create',
+        { showId: selectedTime.showId, selectedSeats },
+        { headers: { Authorization: `Bearer ${await getToken()}` } }
+      )
 
-      if(data.success) {
-        toast.success(data.message)
-        navigate('/my-bookings')
+      if (data.success && data.url) {
+        window.location.href = data.url;
       } else {
-        toast.error(data.message)
+        toast.error(data.message || 'Unable to proceed to payment page.')
       }
 
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.response?.data?.message || error.message)
     }
   }
 
