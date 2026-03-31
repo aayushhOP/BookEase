@@ -1,6 +1,5 @@
 import Booking from "../models/Booking.js";
 import Show from "../models/Show.js"
-import Movie from "../models/Movie.js"
 import stripe from 'stripe'
 
 
@@ -81,7 +80,7 @@ export const createBooking = async (req, res) => {
     }]
 
     const session = await stripeInstance.checkout.sessions.create({
-      success_url: `${origin}/my-bookings?payment=success`,
+      success_url: `${origin}/my-bookings?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/my-bookings?payment=cancelled`,
       line_items,
       mode: 'payment',
@@ -118,5 +117,45 @@ export const getOccupiedSeats = async (req, res) => {
     console.log(error.message)
     return res.json({ success: false, message: error.message })
   }
+}
 
+export const verifyStripePayment = async (req, res) => {
+  try {
+    const { userId } = req.auth();
+    const { session_id: sessionId } = req.query;
+
+    if (!userId) {
+      return res.json({ success: false, message: 'Please login to continue.' })
+    }
+
+    if (!sessionId) {
+      return res.json({ success: false, message: 'Missing payment session id.' })
+    }
+
+    const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
+    const session = await stripeInstance.checkout.sessions.retrieve(sessionId)
+    const bookingId = session.metadata?.bookingId;
+
+    if (!bookingId) {
+      return res.json({ success: false, message: 'Booking not found for this payment.' })
+    }
+
+    const booking = await Booking.findById(bookingId)
+
+    if (!booking || booking.user !== userId) {
+      return res.json({ success: false, message: 'Unauthorized booking access.' })
+    }
+
+    if (session.payment_status === 'paid') {
+      booking.isPaid = true
+      booking.paymentLink = ''
+      await booking.save()
+      return res.json({ success: true, message: 'Payment verified successfully.' })
+    }
+
+    return res.json({ success: false, message: 'Payment is not completed yet.' })
+  } catch (error) {
+    console.log(error.message)
+    return res.json({ success: false, message: error.message })
+  }
 }

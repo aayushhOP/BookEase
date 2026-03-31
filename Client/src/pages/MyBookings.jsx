@@ -1,39 +1,78 @@
-import React, { useEffect, useState } from 'react'
-import { dummyBookingData } from '../assets/assets'
+import React, { useCallback, useEffect, useState } from 'react'
 import Loading from '../components/Loading'
 import BlurCircle from '../components/BlurCircle'
 import timeFormat from '../lib/timeFormat'
 import dateFormat from '../lib/dateFormat'
 import { useAppContext } from '../context/AppContext'
+import { Link, useSearchParams } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 const MyBookings = () => {
   const currency = import.meta.env.VITE_CURRENCY
 
-   const {axios, getToken, user, image_base_url} = useAppContext()
+  const { axios, getToken, user, image_base_url } = useAppContext()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const paymentStatus = searchParams.get('payment')
+  const sessionId = searchParams.get('session_id')
 
   const [bookings, setBookings] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
-
-  const getMyBookings = async () => {
+  const getMyBookings = useCallback(async () => {
     try {
-      const {data} = await axios.get('/api/user/bookings', {headers: { Authorization: `Bearer ${await getToken()}`}})
+      const { data } = await axios.get('/api/user/bookings', { headers: { Authorization: `Bearer ${await getToken()}` } })
 
       if (data.success) {
         setBookings(data.bookings)
       }
-
     } catch (error) {
-      console.log(wrror)
+      console.log(error)
+      toast.error('Unable to fetch bookings right now.')
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
-  }
+  }, [axios, getToken])
 
-  useEffect(()=> {
-    if(user) {
-      getMyBookings()
-    }   
-  },[user])
+  const verifyPayment = useCallback(async () => {
+    if (!sessionId) return;
+
+    try {
+      const { data } = await axios.get(`/api/booking/verify?session_id=${sessionId}`, {
+        headers: { Authorization: `Bearer ${await getToken()}` }
+      })
+
+      if (data.success) {
+        toast.success('Payment completed successfully.')
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message)
+    }
+  }, [axios, getToken, sessionId])
+
+  useEffect(() => {
+    const loadBookings = async () => {
+      if (!user) {
+        setIsLoading(false)
+        return;
+      }
+
+      setIsLoading(true)
+
+      if (paymentStatus === 'success' && sessionId) {
+        await verifyPayment()
+        setSearchParams({})
+      } else if (paymentStatus === 'cancelled') {
+        toast('Payment was cancelled.')
+        setSearchParams({})
+      }
+
+      await getMyBookings()
+    }
+
+    loadBookings()
+  }, [user, paymentStatus, sessionId, verifyPayment, getMyBookings, setSearchParams])
 
 
   return !isLoading ? (
@@ -64,10 +103,15 @@ const MyBookings = () => {
               <p className='text-2xl font-semibold mb-3'>
                 {currency}{item.amount}
               </p>
-              {!item.isPaid && 
-              <button className='bg-primary px-4 py-1.5 mb-3 text-sm rounded-full font-medium cursor-pointer'>
-                Pay Now
-              </button>}
+              {item.isPaid ? (
+                <span className='bg-green-500/15 text-green-400 px-4 py-1.5 mb-3 text-sm rounded-full font-medium'>
+                  Paid
+                </span>
+              ) : (
+                <Link to={item.paymentLink} className='bg-primary px-4 py-1.5 mb-3 text-sm rounded-full font-medium cursor-pointer'>
+                  Pay Now
+                </Link>
+              )}
             </div>
             <div className='text-sm'>
               <p>
