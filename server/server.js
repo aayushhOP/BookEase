@@ -13,11 +13,15 @@ import './models/Movie.js';
 import './models/Show.js';
 import './models/Booking.js';
 import './models/User.js';
+import { stripeWebhooks } from './controllers/stripeWebhooks.js';
 
 const app = express();
 const port = 3000;
 
 await connectDb()
+
+//stripe webhooks route
+app.use('/api/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 
 //middleware
 app.use(express.json())
