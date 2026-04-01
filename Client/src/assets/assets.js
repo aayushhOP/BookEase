@@ -1,4 +1,4 @@
-import bookease from './bookease_logo.svg'
+import bookease from './bookEase_remastered.svg'
 import JioStudios from './JioStudios.png'
 import googlePlay from './googlePlay.svg'
 import appStore from './appStore.svg'

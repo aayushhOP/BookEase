@@ -15,9 +15,9 @@ const Navbar = () => {
   const {favouriteMovies} = useAppContext()
 
   return (
-    <div className='fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-16 lg:px-36 py-5'>
+    <div className='fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-16 lg:px-36'>
       <Link to='/' className='max-md:flex-1'>
-        <img src = {assets.bookease} alt="" className = 'w-50 h-auto' />
+        <img src = {assets.bookease} alt="" className = 'w-55 h-auto' />
       </Link>
 
 
