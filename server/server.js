@@ -29,7 +29,7 @@ app.use(cors())
 app.use(clerkMiddleware())
 
 //api routes
-app.get('/', (req,res) => res.send('Server is Live!'))
+app.get('/', (req,res) => res.send('BookEase Server is Live!'))
 app.use('/api/inngest', serve({ client: inngest, functions }));
 app.use('/api/show', showRouter)
 app.use('/api/booking', bookingRouter)
