@@ -88,7 +88,7 @@ const releaseSeats = inngest.createFunction(
 //inngest function for sending users an email when booking is done
 const sendBookingConfirmationEmail = inngest.createFunction(
   { id: 'send-booking-confirmation-email', triggers: { event: 'app/show.booked' } },
-  async ({ event }) => {
+  async ({ event, step }) => {
     const { bookingId } = event.data;
 
     const booking = await Booking.findById(bookingId)
@@ -100,7 +100,7 @@ const sendBookingConfirmationEmail = inngest.createFunction(
 
       await sendEmail({
         to: booking.user.email,
-        subject: `payment confirmation: '${booking.show.movie.title}' booked successfully!`,
+        subject: `Payment Confirmation: '${booking.show.movie.title}' booked successfully!`,
         body: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
         <h2>Hi ${booking.user.name},</h2>
         <p>Your booking for <strong style="color: #f84565;">"${booking.show.movie.title}"</strong> is confirmed.</p>
