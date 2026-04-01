@@ -9,20 +9,33 @@ const TrailersSection = () => {
   const [currentTrailer, setCurrentTrailer] = useState(dummyTrailers[0])
 
   return (
-    <div className='px-6 md:px-16 lg:px-24 cl:44 py-20 overflow-hidden'>
+    <div className='px-6 md:px-16 lg:px-24 py-20 overflow-hidden'>
       <p className='text-gray-300 font-medium text-lg max-w-[960px]'>
         Trailers
       </p>
 
       <div className='relative mt-6'>
         <BlurCircle top='-100px' right='-100px' />
-        <ReactPlayer url={currentTrailer.videoUrl} controls={false} className="mx-auto max-w-full" width="960px" height="540px" />
+        <ReactPlayer 
+          url={currentTrailer.videoUrl} 
+          controls={true} 
+          playing={false}
+          light={true}
+          className="mx-auto max-w-full rounded-lg shadow-lg" 
+          width="100%" 
+          height="540px"
+          config={{
+            youtube: {
+              playerVars: { showinfo: 1 }
+            }
+          }}
+        />
       </div>
 
       <div className='group grid grid-cols-4 gap-4 md:gap-8 mt-8 max-w-3xl mx-auto'>
         {dummyTrailers.map((trailer)=>(
           <div key={trailer.image} 
-            className='relative group-hover:not-hover:opacity-50 hover:-translate-y-1 duration-300 transition   max-md:h-60 md:max-h-60 cursor-pointer' onClick={()=>setCurrentTrailer(trailer)}>
+            className='relative opacity-100 group-hover:opacity-50 hover:!opacity-100 hover:-translate-y-1 duration-300 transition cursor-pointer' onClick={()=>setCurrentTrailer(trailer)}>
 
             <img src={trailer.image} alt='trailer' 
             className='rounded-lg w-full h-full object-cover brightness-75'/>
@@ -36,4 +49,4 @@ const TrailersSection = () => {
   )
 }
 
-export default TrailersSection
+export default TrailersSection;
