@@ -299,17 +299,6 @@ npm run build
 ### Backend (Vercel/Render/Railway)
 Backend deployment configurations are included in `server/vercel.json`.
 
-## Future Enhancements
-
-- [ ] Real-time seat updates with WebSockets
-- [ ] Advanced search and filtering
-- [ ] Movie ratings and reviews
-- [ ] Multiple theater locations
-- [ ] Mobile app (React Native)
-- [ ] Loyalty program
-- [ ] Gift cards
-- [ ] Group bookings
-
 ## Author
 
 BookEase Development Team
